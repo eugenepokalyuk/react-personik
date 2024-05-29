@@ -5,8 +5,6 @@ This web application is a game of cities for time. The goal of the game is to na
 ## Features
 
 - Validation on existing cities.
-- Progress bar animation.
-- Smooth animation of progress bar.
 - Game rule support: cities cannot be repeated.
 - Game rule support: no city names with “ъ”, "ы" and “ь” signs.
 - Game rule support: each player is given 2 minutes to think.
