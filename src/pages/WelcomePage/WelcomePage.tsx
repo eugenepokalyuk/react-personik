@@ -11,7 +11,7 @@ const WelcomePage: React.FC = () => {
 
     return (
         <GameFrame>
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200">
+            <div className="flex flex-col items-center justify-center bg-gray-200">
                 <div className="bg-white rounded-2xl max-w-xl w-full">
                     <div className='prose text-center p-6'>
                         <h4 className="text-base font-normal">Игра в города на время</h4>
@@ -21,7 +21,6 @@ const WelcomePage: React.FC = () => {
                         <div className="bg-gray-100 h-1.5 w-full"></div>
                     </div>
 
-                    {/*  */}
                     <div className='prose prose-sm p-6 space-y-6'>
                         <p className="text-sm">Цель: Назвать как можно больше реальных городов.</p>
                         <ul className="pl-5 list-disc list-outside text-sm !mt-0">
