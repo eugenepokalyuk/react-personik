@@ -44,21 +44,19 @@ const GamePage: React.FC = () => {
     useEffect(() => {
         if (!isUserTurn) {
             setIsThinking(true);
-            getNextCity(cities, lastChar).then((nextCity: string) => {
+            getNextCity(cities, lastChar).then(nextCity => {
                 setCities(prevCities => [...prevCities, nextCity]);
                 setLastChar(getLastChar(nextCity));
                 setIsThinking(false);
                 setIsUserTurn(true);
-                setTimeLeft(gameTimePerPlayer); // Сброс времени для следующего хода
-                setAnimationKey(prevKey => prevKey + 1); // Обновление ключа для анимации
+                setTimeLeft(gameTimePerPlayer);
+                setAnimationKey(prevKey => prevKey + 1);
             });
         }
     }, [isUserTurn, cities, lastChar]);
 
     useEffect(() => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [cities]);
 
     const handleCityInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,29 +81,23 @@ const GamePage: React.FC = () => {
             setError('Такой город уже был введен.');
             return;
         }
-        if (
-            currentCity &&
-            validateExistingCity(currentCity) &&
-            !cities.includes(currentCity) &&
-            (!lastChar || currentCity.toLowerCase().startsWith(lastChar))
-        ) {
-            setCities([...cities, currentCity]);
+        if (currentCity && (!lastChar || currentCity.toLowerCase().startsWith(lastChar))) {
+            setCities(prevCities => [...prevCities, currentCity]);
             setLastChar(getLastChar(currentCity));
             setCurrentCity('');
             setIsUserTurn(false);
-            setTimeLeft(gameTimePerPlayer); // Сброс времени для следующего хода
-            setAnimationKey(prevKey => prevKey + 1); // Обновление ключа для анимации
+            setTimeLeft(gameTimePerPlayer);
+            setAnimationKey(prevKey => prevKey + 1);
             setError(null);
         } else {
             setError('Играй по правилам!');
-            return;
         }
     };
 
     return (
         <GameFrame className='min-h-[578px]'>
             <div className='flex flex-col justify-between pt-6 space-y-6'>
-                <div className='flex justify-between items-top text-center px-6'>
+                <div className='flex justify-between items-center text-center px-6'>
                     <h2 className="text-left text-base">{isUserTurn ? "Сейчас ваша очередь" : "Сейчас очередь соперника"}</h2>
                     <p className="text-lg">{`0${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}`}</p>
                 </div>
@@ -115,8 +107,8 @@ const GamePage: React.FC = () => {
                         key={animationKey}
                         className="progress-bar bg-violet-300 h-1.5"
                         style={{
-                            animation: `progress ${gameTimePerPlayer}s linear infinite`,
-                            width: `${(timeLeft / gameTimePerPlayer) * 100}%`
+                            animation: `progress ${gameTimePerPlayer}s linear`,
+                            width: '100%'
                         }}
                     ></div>
                 </div>
@@ -133,7 +125,7 @@ const GamePage: React.FC = () => {
                             {cities.map((city, index) => (
                                 <li
                                     key={index}
-                                    className={`break-all whitespace-normal w-auto mb-2 px-3 py-1.5 ${index % 2 === 0 ? ('rounded-xl rounded-bl-none bg-violet-50 text-left mr-auto') : ('rounded-xl rounded-br-none bg-violet-500 text-white text-right ml-auto')}`}
+                                    className={`break-all whitespace-normal w-auto mb-2 px-3 py-1.5 ${index % 2 === 0 ? 'rounded-xl rounded-bl-none bg-violet-50 text-left mr-auto' : 'rounded-xl rounded-br-none bg-violet-500 text-white text-right ml-auto'}`}
                                 >
                                     {city}
                                 </li>
@@ -156,12 +148,12 @@ const GamePage: React.FC = () => {
             </div>
             <div className='p-4'>
                 <form onSubmit={handleCitySubmit} className='flex flex-col md:flex-row justify-center items-center'>
-                    <div className={`flex items-center bg-gray-100 rounded w-full ${error && "border border-red-500"}`}>
+                    <div className={`w-full h-12 flex items-center bg-gray-100 rounded ${error && "border border-red-500"}`}>
                         <input
                             type="text"
                             value={currentCity}
                             onChange={handleCityInput}
-                            className="bg-transparent text-gray-700 w-full p-3 text-sm outline-none"
+                            className="bg-transparent text-gray-700 w-full h-full p-3 text-sm outline-none"
                             placeholder={`${lastChar ? `Знаете город на букву ${lastChar.toUpperCase()}?` : 'Напишите любой город, например: Где вы живете?'}`}
                             disabled={!isUserTurn}
                         />
@@ -175,7 +167,7 @@ const GamePage: React.FC = () => {
                     </div>
                     <button
                         type="submit"
-                        className="flex md:hidden justify-center items-center bg-purple-500 hover:bg-purple-600 text-white p-2 m-2 rounded w-full"
+                        className="w-full h-12 flex md:hidden justify-between md:justify-center items-center bg-purple-500 hover:bg-purple-600 text-white p-2 m-2 rounded"
                         disabled={!isUserTurn}
                     >
                         Отправить <IconMessage />
