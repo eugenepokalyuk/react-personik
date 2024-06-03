@@ -15,15 +15,15 @@
     font-family: "ALS Gorizont Expanded Regular";
 }
 
-@keyframes progressBar {
+.progress-bar {
+    animation: progress linear infinite;
+}
+
+@keyframes progress {
     from {
         width: 100%;
     }
     to {
         width: 0;
     }
-}
-
-.progress-bar {
-    animation: progressBar linear forwards;
 }

@@ -10,43 +10,34 @@ import { validateExistingCity } from '../../utils/validateExistingCity';
 
 const GamePage: React.FC = () => {
     const navigate = useNavigate();
-    let gameTimer: number = 120;
+    const gameTimePerPlayer = 120; // 2 минуты в секундах
 
-    const [timeLeft, setTimeLeft] = useState(gameTimer);
+    const [timeLeft, setTimeLeft] = useState(gameTimePerPlayer);
     const [cities, setCities] = useState<string[]>([]);
     const [currentCity, setCurrentCity] = useState('');
     const [isUserTurn, setIsUserTurn] = useState(true);
     const [lastChar, setLastChar] = useState<string | null>(null);
     const [isThinking, setIsThinking] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [animationKey, setAnimationKey] = useState(0);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (timeLeft > 0) {
             const timerId = setInterval(() => {
-                setTimeLeft(timeLeft - 1);
+                setTimeLeft(prevTime => prevTime - 1);
             }, 1000);
 
             return () => clearInterval(timerId);
         } else {
-            if (isUserTurn) {
-                navigate('/result', {
-                    state: {
-                        result: 'lose',
-                        totalCities: cities.length,
-                        lastCity: cities[cities.length - 1],
-                    },
-                });
-            } else {
-                navigate('/result', {
-                    state: {
-                        result: 'win',
-                        totalCities: cities.length,
-                        lastCity: cities[cities.length - 1],
-                    },
-                });
-            }
+            navigate('/result', {
+                state: {
+                    result: isUserTurn ? 'lose' : 'win',
+                    totalCities: cities.length,
+                    lastCity: cities[cities.length - 1],
+                },
+            });
         }
     }, [timeLeft, isUserTurn, cities, navigate]);
 
@@ -58,6 +49,8 @@ const GamePage: React.FC = () => {
                 setLastChar(getLastChar(nextCity));
                 setIsThinking(false);
                 setIsUserTurn(true);
+                setTimeLeft(gameTimePerPlayer); // Сброс времени для следующего хода
+                setAnimationKey(prevKey => prevKey + 1); // Обновление ключа для анимации
             });
         }
     }, [isUserTurn, cities, lastChar]);
@@ -100,6 +93,8 @@ const GamePage: React.FC = () => {
             setLastChar(getLastChar(currentCity));
             setCurrentCity('');
             setIsUserTurn(false);
+            setTimeLeft(gameTimePerPlayer); // Сброс времени для следующего хода
+            setAnimationKey(prevKey => prevKey + 1); // Обновление ключа для анимации
             setError(null);
         } else {
             setError('Играй по правилам!');
@@ -109,26 +104,32 @@ const GamePage: React.FC = () => {
 
     return (
         <GameFrame className='min-h-[578px]'>
-            <div className='flex justify-between items-center p-6 text-center'>
-                <h2 className="text-base">{isUserTurn ? "Сейчас ваша очередь" : "Сейчас очередь соперника"}</h2>
-                <p className="text-lg">{`0${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}`}</p>
-            </div>
+            <div className='flex flex-col justify-between pt-6 space-y-6'>
+                <div className='flex justify-between items-top text-center px-6'>
+                    <h2 className="text-left text-base">{isUserTurn ? "Сейчас ваша очередь" : "Сейчас очередь соперника"}</h2>
+                    <p className="text-lg">{`0${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? `0${timeLeft % 60}` : timeLeft % 60}`}</p>
+                </div>
 
-            <div className="w-full bg-gray-100 h-1.5 mb-4 relative">
-                <div
-                    className="progress-bar bg-violet-300 h-1.5"
-                    style={{ animationDuration: `${gameTimer}s` }}
-                ></div>
+                <div className="w-full bg-gray-100 h-1.5 relative">
+                    <div
+                        key={animationKey}
+                        className="progress-bar bg-violet-300 h-1.5"
+                        style={{
+                            animation: `progress ${gameTimePerPlayer}s linear infinite`,
+                            width: `${(timeLeft / gameTimePerPlayer) * 100}%`
+                        }}
+                    ></div>
+                </div>
             </div>
 
             <div className="min-h-96 h-full">
                 {cities.length === 0 ? (
-                    <div className='min-h-96 h-full flex justify-center items-center text-center'>
+                    <div className='h-96 flex justify-center items-center text-center'>
                         <p className="text-gray-400">Первый участник вспоминает города...</p>
                     </div>
                 ) : (
-                    <div className='w-full'>
-                        <ul className='w-full flex flex-col p-4 h-96 overflow-y-auto'>
+                    <div>
+                        <ul className='h-96 w-full flex flex-col p-4 overflow-y-auto'>
                             {cities.map((city, index) => (
                                 <li
                                     key={index}
@@ -146,8 +147,9 @@ const GamePage: React.FC = () => {
 
                             <div ref={messagesEndRef} />
                         </ul>
+
                         <div className='h-full flex justify-center items-center'>
-                            <p className="text-gray-400">Всего перечислено городов: {cities.length}</p>
+                            <p className="text-xs text-gray-400">Всего перечислено городов: {cities.length}</p>
                         </div>
                     </div>
                 )}
