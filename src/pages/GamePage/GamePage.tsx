@@ -78,6 +78,10 @@ const GamePage: React.FC = () => {
 
     const handleCitySubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        if (!isUserTurn) {
+            setError('Сейчас ход соперника.');
+            return;
+        }
         if (!validateExistingCity(currentCity)) {
             setError('Такого города не существует.');
             return;
@@ -150,18 +154,19 @@ const GamePage: React.FC = () => {
             </div>
             <div className='p-4'>
                 <form onSubmit={handleCitySubmit} className='flex flex-col md:flex-row justify-center items-center'>
-                    {/*  */}
                     <div className={`flex items-center bg-gray-100 rounded w-full ${error && "border border-red-500"}`}>
                         <input
                             type="text"
                             value={currentCity}
                             onChange={handleCityInput}
-                            className="bg-transparent text-gray-700 w-full p-3 outline-none"
+                            className="bg-transparent text-gray-700 w-full p-3 text-sm outline-none"
                             placeholder={`${lastChar ? `Знаете город на букву ${lastChar.toUpperCase()}?` : 'Напишите любой город, например: Где вы живете?'}`}
+                            disabled={!isUserTurn}
                         />
                         <button
                             type="submit"
                             className="hidden md:block bg-purple-500 hover:bg-purple-600 text-white p-2 m-2 rounded"
+                            disabled={!isUserTurn}
                         >
                             <IconMessage />
                         </button>
@@ -169,6 +174,7 @@ const GamePage: React.FC = () => {
                     <button
                         type="submit"
                         className="flex md:hidden justify-center items-center bg-purple-500 hover:bg-purple-600 text-white p-2 m-2 rounded w-full"
+                        disabled={!isUserTurn}
                     >
                         Отправить <IconMessage />
                     </button>

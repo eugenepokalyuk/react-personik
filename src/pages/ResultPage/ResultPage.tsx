@@ -44,7 +44,7 @@ const ResultPage: React.FC = () => {
   };
 
   return (
-    <GameFrame className='flex flex-col justify-center items-center space-y-8 py-10'>
+    <GameFrame className='flex flex-col justify-center items-center space-y-8 p-10'>
       {result === 'lose' ? (
         <>
           <div className='text-center'>
@@ -74,7 +74,7 @@ const ResultPage: React.FC = () => {
       </div>
       <button
         onClick={handleRestart}
-        className="bg-purple-500 text-white p-2 rounded mt-4"
+        className="bg-purple-500 hover:bg-purple-600 text-white p-2 rounded mt-4"
       >
         Начать новую игру
       </button>
